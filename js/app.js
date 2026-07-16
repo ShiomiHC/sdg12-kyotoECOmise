@@ -16,15 +16,8 @@ const CATEGORY_LABEL = { restaurant: "レストラン", cafe: "カフェ" };
 /* 行政区の並び順（京都市11区の公式順） */
 const WARD_ORDER = ["北区", "上京区", "左京区", "中京区", "東山区", "山科区", "下京区", "南区", "右京区", "西京区", "伏見区"];
 
-/* プレースホルダー配色（自然の色を循環） */
-const PLACEHOLDER_TONES = [
-  ["#6B8E5E", "#4E6B48"],  /* 苔 */
-  ["#8A9A5B", "#6B7A40"],  /* 抹茶 */
-  ["#A98467", "#84624A"],  /* 土 */
-  ["#5F7F71", "#43604F"],  /* 青磁 */
-  ["#96654F", "#744C3A"],  /* 焙じ茶 */
-  ["#7A8B99", "#5B6B78"]   /* 藍鼠 */
-];
+/* 和紋プレースホルダーのクラス数（css の .washi-0〜5 を循環） */
+const WASHI_COUNT = 6;
 
 /* ===== 状態 ===== */
 const state = { search: "", category: "all", area: "all", tags: new Set() };
@@ -38,18 +31,12 @@ function escapeHtml(s) {
   ));
 }
 
-function toneFor(store) {
-  const idx = STORES.indexOf(store);
-  return PLACEHOLDER_TONES[idx % PLACEHOLDER_TONES.length];
-}
-
 function initialFor(store) {
   return [...store.name][0];
 }
 
-function placeholderStyle(store) {
-  const [a, b] = toneFor(store);
-  return `background: linear-gradient(135deg, ${a}, ${b});`;
+function placeholderClass(store) {
+  return `washi-${STORES.indexOf(store) % WASHI_COUNT}`;
 }
 
 function tagIconSvg(tag) {
@@ -66,12 +53,7 @@ function buildFilters() {
     btn.dataset.tag = key;
     btn.setAttribute("aria-pressed", "false");
     btn.innerHTML = `${tagIconSvg(key)}${escapeHtml(def.label)}`;
-    btn.addEventListener("click", () => {
-      if (state.tags.has(key)) state.tags.delete(key);
-      else state.tags.add(key);
-      btn.setAttribute("aria-pressed", state.tags.has(key) ? "true" : "false");
-      render();
-    });
+    btn.addEventListener("click", () => toggleTag(key));
     chipsBox.appendChild(btn);
   }
 
@@ -105,6 +87,23 @@ function buildFilters() {
   $("#emptyResetBtn").addEventListener("click", clearFilters);
 }
 
+/* タグの ON/OFF を切り替え、同じタグを指すボタン
+ * （フィルターのチップとヒーローの視点ボタン）をまとめて同期する。 */
+function toggleTag(key) {
+  const on = !state.tags.has(key);
+  if (on) state.tags.add(key);
+  else state.tags.delete(key);
+  syncTagButtons(key, on);
+  render();
+  return on;
+}
+
+function syncTagButtons(key, on) {
+  for (const b of document.querySelectorAll(`button[data-tag="${key}"]`)) {
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+}
+
 function clearFilters() {
   state.search = "";
   state.category = "all";
@@ -115,7 +114,7 @@ function clearFilters() {
   for (const b of $("#catSeg").querySelectorAll("button")) {
     b.setAttribute("aria-pressed", b.dataset.cat === "all" ? "true" : "false");
   }
-  for (const b of $("#tagChips").querySelectorAll(".chip")) {
+  for (const b of document.querySelectorAll("button[data-tag]")) {
     b.setAttribute("aria-pressed", "false");
   }
   render();
@@ -181,8 +180,7 @@ function restoreFromURL() {
     for (const t of tags.split(",")) {
       if (!TAGS[t]) continue;
       state.tags.add(t);
-      const chip = $("#tagChips").querySelector(`.chip[data-tag="${t}"]`);
-      if (chip) chip.setAttribute("aria-pressed", "true");
+      syncTagButtons(t, true);
     }
   }
 }
@@ -213,19 +211,21 @@ function render() {
   $("#emptyState").classList.toggle("show", list.length === 0);
 
   grid.innerHTML = "";
-  for (const store of list) {
+  list.forEach((store, i) => {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "card";
     card.setAttribute("aria-haspopup", "dialog");
     card.setAttribute("aria-label", `${store.name}の詳細を見る`);
+    /* 上から順に少しずつ遅らせて立ち上げる（後方はまとめて表示） */
+    card.style.animationDelay = `${Math.min(i, 11) * 40}ms`;
 
     const photo = store.photo
       ? `<img src="${escapeHtml(store.photo)}" alt="${escapeHtml(store.name)}の写真">`
       : `<span class="initial">${escapeHtml(initialFor(store))}</span>`;
 
     card.innerHTML = `
-      <div class="card-photo" style="${store.photo ? "" : placeholderStyle(store)}">
+      <div class="card-photo ${store.photo ? "" : placeholderClass(store)}">
         ${photo}
         <span class="cat-badge">${CATEGORY_LABEL[store.category]}</span>
       </div>
@@ -234,12 +234,12 @@ function render() {
         <span class="card-area">京都市${escapeHtml(store.area)}</span>
         <p class="card-desc">${escapeHtml(store.description)}</p>
         <div class="card-tags">
-          ${store.eco_tags.map((t) => `<span class="mini-tag">${escapeHtml(TAGS[t.tag].label)}</span>`).join("")}
+          ${store.eco_tags.map((t) => `<span class="mini-tag t-${t.tag}">${escapeHtml(TAGS[t.tag].label)}</span>`).join("")}
         </div>
       </div>`;
     card.addEventListener("click", () => openModal(store));
     grid.appendChild(card);
-  }
+  });
 }
 
 /* ===== 詳細モーダル ===== */
@@ -250,7 +250,7 @@ function openModal(store) {
   lastFocused = document.activeElement;
 
   const banner = $("#modalBanner");
-  banner.style.cssText = placeholderStyle(store);
+  banner.className = `modal-banner ${placeholderClass(store)}`;
   $("#modalInitial").textContent = initialFor(store);
 
   const rows = [
@@ -274,7 +274,7 @@ function openModal(store) {
       <h3>環境への取り組み</h3>
       ${store.eco_tags.map((t) => `
         <div class="eco-item">
-          <span class="mini-tag">${escapeHtml(TAGS[t.tag].label)}</span>
+          <span class="mini-tag t-${t.tag}">${escapeHtml(TAGS[t.tag].label)}</span>
           <p>${escapeHtml(t.detail)}</p>
         </div>`).join("")}
     </section>
@@ -347,8 +347,7 @@ function buildHeroStats() {
   const areas = new Set(STORES.map((s) => s.area)).size;
   $("#heroStats").innerHTML = [
     [STORES.length, "掲載店舗"],
-    [areas, "エリア（行政区）"],
-    [Object.keys(TAGS).length, "エコの視点"]
+    [areas, "エリア（行政区）"]
   ].map(([n, l]) => `
     <div class="hero-stat">
       <span class="num">${n}</span>
@@ -356,7 +355,31 @@ function buildHeroStats() {
     </div>`).join("");
 }
 
+/* ===== ヒーローの視点ボタン =====
+ * 5つのエコの視点をヒーローに並べ、押すとそのタグで絞り込んで
+ * 一覧までスクロールする。フィルターのチップと状態を共有する。 */
+function buildHeroViews() {
+  const box = $("#heroViews");
+  for (const [key, def] of Object.entries(TAGS)) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "view-btn";
+    btn.dataset.tag = key;
+    btn.setAttribute("aria-pressed", "false");
+    btn.innerHTML = `${tagIconSvg(key)}${escapeHtml(def.label)}`;
+    btn.addEventListener("click", () => {
+      const on = toggleTag(key);
+      if (on) {
+        const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        document.querySelector(".results").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+      }
+    });
+    box.appendChild(btn);
+  }
+}
+
 buildFilters();
 buildHeroStats();
+buildHeroViews();
 restoreFromURL();
 render();
