@@ -121,6 +121,72 @@ function clearFilters() {
   render();
 }
 
+/* ===== 絞り込み状態と URL の同期 =====
+ * state（search / category / area / tags）を URL のクエリ文字列に反映する。
+ * デフォルト値（空検索・all・all・タグなし）の項目は書き込まず、
+ * すべてデフォルトならクエリ文字列自体を消す。history には残さない。
+ */
+function syncURL() {
+  const params = new URLSearchParams();
+  if (state.search) params.set("q", state.search);
+  if (state.category !== "all") params.set("cat", state.category);
+  if (state.area !== "all") params.set("area", state.area);
+  if (state.tags.size > 0) params.set("tags", [...state.tags].join(","));
+
+  const qs = params.toString();
+  const url = `${location.pathname}${qs ? `?${qs}` : ""}${location.hash}`;
+  try {
+    /* file:// で開いた場合、環境によっては replaceState が
+     * SecurityError を投げることがあるため、失敗しても無視して続行する。 */
+    history.replaceState(null, "", url);
+  } catch (e) {
+    /* 何もしない：URL 同期は失敗してもフィルター機能自体には影響させない */
+  }
+}
+
+/* ページ読み込み時に URL のクエリ文字列から state を復元し、UI にも反映する。
+ * 未知の値（存在しないタグID・カテゴリー・エリア）は無視する。
+ */
+function restoreFromURL() {
+  let params;
+  try {
+    params = new URLSearchParams(location.search);
+  } catch (e) {
+    return;
+  }
+
+  const q = params.get("q");
+  if (q) {
+    state.search = q.trim().toLowerCase();
+    $("#searchInput").value = q;
+  }
+
+  const cat = params.get("cat");
+  if (cat === "restaurant" || cat === "cafe") {
+    state.category = cat;
+    for (const b of $("#catSeg").querySelectorAll("button")) {
+      b.setAttribute("aria-pressed", b.dataset.cat === cat ? "true" : "false");
+    }
+  }
+
+  const area = params.get("area");
+  const areaSelect = $("#areaSelect");
+  if (area && [...areaSelect.options].some((o) => o.value === area)) {
+    state.area = area;
+    areaSelect.value = area;
+  }
+
+  const tags = params.get("tags");
+  if (tags) {
+    for (const t of tags.split(",")) {
+      if (!TAGS[t]) continue;
+      state.tags.add(t);
+      const chip = $("#tagChips").querySelector(`.chip[data-tag="${t}"]`);
+      if (chip) chip.setAttribute("aria-pressed", "true");
+    }
+  }
+}
+
 /* ===== 絞り込み ===== */
 function filteredStores() {
   return STORES.filter((s) => {
@@ -140,6 +206,7 @@ function filteredStores() {
 
 /* ===== 一覧描画 ===== */
 function render() {
+  syncURL();
   const list = filteredStores();
   $("#resultCount").innerHTML =
     `<strong>${list.length}</strong>件を表示中（全${STORES.length}件）`;
@@ -234,10 +301,45 @@ function closeModal() {
   if (lastFocused) lastFocused.focus();
 }
 
+/* モーダル内の「フォーカス可能な要素」を都度取得する。
+ * modalContent はリンクなど内容が店舗ごとに動的に生成されるため、
+ * キャッシュせず Tab キーが押されるたびに再計算する。 */
+function focusableEls(container) {
+  return [...container.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )];
+}
+
+/* モーダル表示中は Tab / Shift+Tab をモーダル内でループさせ、
+ * 背景ページにフォーカスが漏れないようにする（フォーカストラップ）。 */
+function trapFocus(e) {
+  const modalBox = $("#modalBox");
+  const focusables = focusableEls(modalBox);
+  if (focusables.length === 0) return;
+
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement;
+
+  if (e.shiftKey) {
+    if (active === first || !modalBox.contains(active)) {
+      e.preventDefault();
+      last.focus();
+    }
+  } else {
+    if (active === last || !modalBox.contains(active)) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+}
+
 $("#modalClose").addEventListener("click", closeModal);
 backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && backdrop.classList.contains("open")) closeModal();
+  if (!backdrop.classList.contains("open")) return;
+  if (e.key === "Escape") { closeModal(); return; }
+  if (e.key === "Tab") trapFocus(e);
 });
 
 /* ===== ヒーロー統計 ===== */
@@ -256,4 +358,5 @@ function buildHeroStats() {
 
 buildFilters();
 buildHeroStats();
+restoreFromURL();
 render();
