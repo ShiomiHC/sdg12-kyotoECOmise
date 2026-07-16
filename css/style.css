@@ -158,11 +158,13 @@ button { font-family: inherit; cursor: pointer; }
   animation: rise .7s ease .28s both;
 }
 
+/* 目次のような索引の列。下のフィルターチップ（操作部）とは
+ * 見た目を変え、「入口」として件数も添える。 */
 .hero-views {
   margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px 22px;
   animation: rise .7s ease .34s both;
 }
 
@@ -170,24 +172,31 @@ button { font-family: inherit; cursor: pointer; }
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 8px 15px;
+  padding: 6px 2px 7px;
   font-size: 13px;
   letter-spacing: .04em;
-  border: 1px solid var(--hairline);
-  border-radius: 999px;
-  background: var(--card);
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  background: none;
   color: var(--ink);
-  transition: background .15s ease, color .15s ease, border-color .15s ease;
+  transition: color .15s ease, border-color .15s ease;
 }
 
 .view-btn svg { width: 15px; height: 15px; stroke: currentColor; flex: none; }
 
-.view-btn:hover { border-color: var(--matcha); }
+.view-btn .cnt {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--green-deep);
+}
+
+.view-btn:hover { color: var(--green-deep); border-color: var(--matcha); }
 
 .view-btn[aria-pressed="true"] {
-  background: var(--green-deep);
-  border-color: var(--green-deep);
-  color: #F4F6EE;
+  color: var(--green-deep);
+  border-bottom: 2px solid var(--green-deep);
+  padding-bottom: 6px;
 }
 
 /* 縦書きの短冊 — このページの署名 */
@@ -442,12 +451,13 @@ select#areaSelect {
  * 店舗ごとに循環させる（JS が .washi-0〜5 を付与する）。
  * 文様は data URI のインライン SVG（外部依存なし）。 */
 .washi-0 {
-  /* 苔 × 青海波 */
-  background-color: #6B8E5E;
+  /* 苔 × 青海波
+   * 正式な描き方に合わせ、扇（塗りつぶし円＋同心の線）を
+   * 上の段から順に描き、下の段が上の段の裾を覆い隠す。 */
+  background-color: #5C7D53;
   background-image:
-    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='20'><g fill='none' stroke='%23FBFAF5' stroke-opacity='.2' stroke-width='1.1'><path d='M0 20a20 20 0 0 1 40 0'/><path d='M6.7 20a13.3 13.3 0 0 1 26.6 0'/><path d='M13.4 20a6.6 6.6 0 0 1 13.2 0'/><path d='M-20 10a20 20 0 0 1 40 0'/><path d='M-13.3 10a13.3 13.3 0 0 1 26.6 0'/><path d='M-6.6 10a6.6 6.6 0 0 1 13.2 0'/><path d='M20 10a20 20 0 0 1 40 0'/><path d='M26.7 10a13.3 13.3 0 0 1 26.6 0'/><path d='M33.4 10a6.6 6.6 0 0 1 13.2 0'/></g></svg>"),
-    linear-gradient(135deg, #6B8E5E, #4E6B48);
-  background-size: 64px 32px, cover;
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='10'><g stroke='%23FBFAF5' stroke-opacity='.2' stroke-width='1'><g><circle cx='10' cy='-5' r='10' fill='%235C7D53'/><circle cx='10' cy='-5' r='6.6' fill='none'/><circle cx='10' cy='-5' r='3.3' fill='none'/></g><g><circle cx='0' cy='0' r='10' fill='%235C7D53'/><circle cx='0' cy='0' r='6.6' fill='none'/><circle cx='0' cy='0' r='3.3' fill='none'/><circle cx='20' cy='0' r='10' fill='%235C7D53'/><circle cx='20' cy='0' r='6.6' fill='none'/><circle cx='20' cy='0' r='3.3' fill='none'/></g><g><circle cx='10' cy='5' r='10' fill='%235C7D53'/><circle cx='10' cy='5' r='6.6' fill='none'/><circle cx='10' cy='5' r='3.3' fill='none'/></g><g><circle cx='0' cy='10' r='10' fill='%235C7D53'/><circle cx='0' cy='10' r='6.6' fill='none'/><circle cx='0' cy='10' r='3.3' fill='none'/><circle cx='20' cy='10' r='10' fill='%235C7D53'/><circle cx='20' cy='10' r='6.6' fill='none'/><circle cx='20' cy='10' r='3.3' fill='none'/></g><g><circle cx='10' cy='15' r='10' fill='%235C7D53'/><circle cx='10' cy='15' r='6.6' fill='none'/><circle cx='10' cy='15' r='3.3' fill='none'/></g></g></svg>");
+  background-size: 44px 22px;
 }
 
 .washi-1 {

@@ -366,7 +366,8 @@ function buildHeroViews() {
     btn.className = "view-btn";
     btn.dataset.tag = key;
     btn.setAttribute("aria-pressed", "false");
-    btn.innerHTML = `${tagIconSvg(key)}${escapeHtml(def.label)}`;
+    const count = STORES.filter((s) => s.eco_tags.some((t) => t.tag === key)).length;
+    btn.innerHTML = `${tagIconSvg(key)}${escapeHtml(def.label)}<span class="cnt">${count}</span>`;
     btn.addEventListener("click", () => {
       const on = toggleTag(key);
       if (on) {
