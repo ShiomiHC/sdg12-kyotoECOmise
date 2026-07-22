@@ -1,4 +1,4 @@
-/* 京都エコごはん帖 — フィルター・一覧・詳細モーダルの制御
+/* 京都エコごはんガイド — フィルター・一覧・詳細モーダルの制御
  * 依存: data/stores.js（STORES を定義）を先に読み込むこと。
  */
 "use strict";
@@ -221,7 +221,7 @@ function render() {
     card.style.animationDelay = `${Math.min(i, 11) * 40}ms`;
 
     const photo = store.photo
-      ? `<img src="${escapeHtml(store.photo)}" alt="${escapeHtml(store.name)}の写真">`
+      ? `<img src="${escapeHtml(store.photo)}" alt="${escapeHtml(store.name)}の写真" width="800" height="600" loading="lazy" decoding="async">`
       : `<span class="initial">${escapeHtml(initialFor(store))}</span>`;
 
     card.innerHTML = `
@@ -250,8 +250,21 @@ function openModal(store) {
   lastFocused = document.activeElement;
 
   const banner = $("#modalBanner");
-  banner.className = `modal-banner ${placeholderClass(store)}`;
-  $("#modalInitial").textContent = initialFor(store);
+  const bannerPhoto = $("#modalPhoto");
+  const bannerInitial = $("#modalInitial");
+  if (store.photo) {
+    banner.className = "modal-banner has-photo";
+    bannerPhoto.src = store.photo;
+    bannerPhoto.alt = `${store.name}の写真`;
+    bannerPhoto.hidden = false;
+    bannerInitial.hidden = true;
+  } else {
+    banner.className = `modal-banner ${placeholderClass(store)}`;
+    bannerPhoto.hidden = true;
+    bannerPhoto.removeAttribute("src");
+    bannerInitial.hidden = false;
+    bannerInitial.textContent = initialFor(store);
+  }
 
   const rows = [
     ["住所", store.address],

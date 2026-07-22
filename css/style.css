@@ -632,6 +632,21 @@ select#areaSelect {
   position: relative;
   display: grid;
   place-items: center;
+  overflow: hidden;
+}
+
+.modal-banner.has-photo {
+  height: 220px;
+}
+
+.modal-banner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .modal-banner .initial {
@@ -793,6 +808,237 @@ select#areaSelect {
   margin-bottom: 6px;
 }
 
+/* ---------- 共通ナビ（layout.js が注入するヘッダー） ---------- */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.brand:hover { color: var(--ink); }
+
+.site-nav { border-top: 1px solid var(--hairline); }
+
+.site-nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 26px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.site-nav a {
+  font-size: 13px;
+  letter-spacing: .08em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 10px 2px;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+
+.site-nav a:hover { color: var(--green-deep); }
+
+.site-nav a[aria-current="page"] {
+  color: var(--green-deep);
+  border-bottom-color: var(--green-deep);
+}
+
+.site-footer .foot-links { margin-top: 10px; }
+
+.site-footer .foot-links a {
+  color: var(--ink-soft);
+  text-decoration-color: var(--hairline);
+  text-underline-offset: 3px;
+  margin-right: 18px;
+  white-space: nowrap;
+}
+
+.site-footer .foot-links a:hover { color: var(--green-deep); }
+
+/* ヒーローから視点紹介ページへの入口 */
+.views-more {
+  margin-top: 16px;
+  font-size: 13px;
+  animation: rise .7s ease .4s both;
+}
+
+.views-more a {
+  color: var(--ink-soft);
+  text-decoration-color: var(--hairline);
+  text-underline-offset: 3px;
+}
+
+.views-more a:hover { color: var(--green-deep); }
+
+/* ---------- 内容ページ（sdg12 / kyoto / about） ---------- */
+.page-hero {
+  border-bottom: 1px solid var(--hairline);
+  background:
+    radial-gradient(1200px 400px at 85% -60%, var(--matcha-pale), transparent 70%),
+    var(--paper);
+}
+
+.page-hero-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 46px 20px 40px;
+}
+
+.page-eyebrow {
+  font-size: 12px;
+  letter-spacing: .16em;
+  color: var(--green-deep);
+  animation: rise .7s ease both;
+}
+
+.page-hero h1 {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 700;
+  letter-spacing: .1em;
+  line-height: 1.4;
+  animation: rise .7s ease .08s both;
+}
+
+.page-lead {
+  margin-top: 14px;
+  max-width: 38em;
+  color: var(--ink-soft);
+  animation: rise .7s ease .16s both;
+}
+
+.article {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 20px 70px;
+}
+
+.article h2 {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--green-dark);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 14px;
+}
+
+.article h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
+}
+
+.article section + section { margin-top: 40px; }
+
+.article p + p { margin-top: 10px; }
+
+.article ul {
+  padding-left: 1.3em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 視点の通し番号（漢数字） */
+.topic-no {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  color: var(--matcha);
+  margin-bottom: 4px;
+}
+
+/* SDGs ターゲットの表示 */
+.sdg-target {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.sdg-chip {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  background: var(--green-deep);
+  color: #F4F6EE;
+  padding: 2px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* 一覧ページへの誘導リンク（絞り込み付き） */
+.topic-link {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 9px 22px;
+  font-size: 13px;
+  letter-spacing: .08em;
+  border: 1px solid var(--green-deep);
+  border-radius: 999px;
+  color: var(--green-deep);
+  text-decoration: none;
+}
+
+.topic-link:hover {
+  background: var(--matcha-pale);
+  color: var(--green-dark);
+}
+
+/* 年表（kyoto ページ） */
+.timeline {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 18px;
+  font-size: 14px;
+}
+
+.timeline dt {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--green-deep);
+  white-space: nowrap;
+}
+
+/* 参考資料 */
+.ref-box {
+  margin-top: 44px;
+  padding: 18px 20px;
+  background: var(--paper-2);
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.ref-box .ref-title {
+  color: var(--ink-soft);
+  letter-spacing: .1em;
+  margin-bottom: 6px;
+}
+
+.ref-box ul {
+  list-style: none;
+  padding-left: 0;
+  gap: 2px;
+}
+
+.ref-box li { overflow-wrap: anywhere; line-height: 2; }
+
 /* ---------- レスポンシブ ---------- */
 @media (max-width: 720px) {
   .site-title { white-space: nowrap; }
@@ -821,4 +1067,8 @@ select#areaSelect {
   .modal-content { padding: 20px 18px 24px; }
   .info-grid { grid-template-columns: 1fr; gap: 2px; }
   .info-grid dt { margin-top: 8px; }
+  .site-nav-inner { gap: 20px; padding: 0 16px; }
+  .page-hero-inner { padding: 34px 20px 30px; }
+  .article { padding: 30px 20px 60px; }
+  .sdg-target { flex-direction: column; gap: 6px; }
 }

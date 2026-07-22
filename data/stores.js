@@ -1,5 +1,5 @@
 /*
- * 店舗データ（京都エコごはん帖）
+ * 店舗データ（京都エコごはんガイド）
  * 追加・修正はこのファイルの STORES 配列を編集する。
  * フォーマットの詳細はリポジトリの DATA_COLLECTION.md を参照。
  */
@@ -8,6 +8,7 @@
 const STORES = [
   {
     "id": "walden-woods-kyoto",
+    "photo": "images/walden-woods-kyoto.jpg",
     "name": "WALDEN WOODS KYOTO",
     "category": "cafe",
     "area": "下京区",
@@ -29,6 +30,7 @@ const STORES = [
   },
   {
     "id": "ran-hotei",
+    "photo": "images/ran-hotei.jpg",
     "name": "らん布袋",
     "category": "cafe",
     "area": "中京区",
@@ -53,6 +55,7 @@ const STORES = [
   },
   {
     "id": "cafe-uzura",
+    "photo": "images/cafe-uzura.jpg",
     "name": "喫茶うずら",
     "category": "cafe",
     "area": "伏見区",
@@ -76,6 +79,7 @@ const STORES = [
   },
   {
     "id": "mumokuteki-cafe-kyoto",
+    "photo": "images/mumokuteki-cafe-kyoto.jpg",
     "name": "mumokuteki cafe KYOTO",
     "category": "cafe",
     "area": "中京区",
@@ -97,6 +101,7 @@ const STORES = [
   },
   {
     "id": "veg-out",
+    "photo": "images/veg-out.jpg",
     "name": "Veg Out（ベグアウト）",
     "category": "cafe",
     "area": "下京区",
@@ -118,6 +123,7 @@ const STORES = [
   },
   {
     "id": "choice-kyoto",
+    "photo": "images/choice-kyoto.jpg",
     "name": "CHOICE-チョイス-",
     "category": "cafe",
     "area": "東山区",
@@ -138,6 +144,7 @@ const STORES = [
   },
   {
     "id": "tourbillon-kyoto",
+    "photo": "images/tourbillon-kyoto.jpg",
     "name": "珈琲専門店トゥールビヨン",
     "category": "cafe",
     "area": "右京区",
@@ -158,6 +165,7 @@ const STORES = [
   },
   {
     "id": "saemon-cafe",
+    "photo": "images/saemon-cafe.jpg",
     "name": "佐右衛門カフェ",
     "category": "cafe",
     "area": "北区",
@@ -178,6 +186,7 @@ const STORES = [
   },
   {
     "id": "ain-soph-journey-kyoto",
+    "photo": "images/ain-soph-journey-kyoto.jpg",
     "name": "AIN SOPH. JOURNEY 京都店",
     "category": "restaurant",
     "area": "中京区",
@@ -199,6 +208,7 @@ const STORES = [
   },
   {
     "id": "botaniq-kajiya",
+    "photo": "images/botaniq-kajiya.jpg",
     "name": "BOTANIQ KAJIYA",
     "category": "restaurant",
     "area": "下京区",
@@ -219,6 +229,7 @@ const STORES = [
   },
   {
     "id": "udon-tenyu",
+    "photo": "images/udon-tenyu.jpg",
     "name": "うどんの天邑",
     "category": "restaurant",
     "area": "山科区",
@@ -245,6 +256,7 @@ const STORES = [
   },
   {
     "id": "tsukinokurabito",
+    "photo": "images/tsukinokurabito.jpg",
     "name": "京の台所 月の蔵人",
     "category": "restaurant",
     "area": "伏見区",
@@ -266,6 +278,7 @@ const STORES = [
   },
   {
     "id": "kitchen-karinya",
+    "photo": "images/kitchen-karinya.jpg",
     "name": "キッチンかりんや",
     "category": "restaurant",
     "area": "伏見区",
@@ -284,6 +297,7 @@ const STORES = [
   },
   {
     "id": "washoku-sato-oishibashi",
+    "photo": "images/washoku-sato-oishibashi.jpg",
     "name": "和食さと 大石橋店",
     "category": "restaurant",
     "area": "南区",
@@ -304,6 +318,7 @@ const STORES = [
   },
   {
     "id": "kyoto-spice-curry-kaaya",
+    "photo": "images/kyoto-spice-curry-kaaya.jpg",
     "name": "京都スパイスカレーKAAYA",
     "category": "restaurant",
     "area": "伏見区",
@@ -324,6 +339,7 @@ const STORES = [
   },
   {
     "id": "jinento-shokudo",
+    "photo": "images/jinento-shokudo.jpg",
     "name": "じねんと食堂",
     "category": "restaurant",
     "area": "伏見区",
